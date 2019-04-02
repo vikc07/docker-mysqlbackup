@@ -34,7 +34,7 @@ RUN addgroup -g $RUN_GID $RUN_GROUP \
         ca-certificates \
         wget \
         unzip \
-    && cd /
+    && cd / \
     && wget https://github.com/vikc07/mysqlbackup/archive/master.zip \
     && unzip master.zip \
     && mv mysqlbackup-master app \
