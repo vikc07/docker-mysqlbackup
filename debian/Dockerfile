@@ -51,7 +51,7 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && pip install -r app/requirements.txt \
     && cp app/mysqlbackup/cfg/sample_mysqlbackup.json app/mysqlbackup/cfg/mysqlbackup.json \
     && mkdir /output \
-    && chown $RUN_USER:$RUN_GROUP /output
+    && chown -R $RUN_USER:$RUN_GROUP /output
 
 USER $RUN_USER
 
