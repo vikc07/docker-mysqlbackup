@@ -15,6 +15,9 @@ ARG RUN_GROUP=coco
 ARG RUN_UID=5555
 ARG RUN_GID=5555
 ARG RUN_PASS=coco123@
+ARG DEPS="ca-certificates \
+        wget \
+        unzip"
 
 ENV MYSQLCLI_DIR=/mysqlcli \
     RUN_USER=${RUN_USER} \
@@ -30,20 +33,14 @@ RUN addgroup -g $RUN_GID $RUN_GROUP \
     && adduser -G $RUN_GROUP -u $RUN_UID -D $RUN_USER \ \
     && chown -R $RUN_USER:$RUN_GROUP $MYSQLCI_DIR \
     && chmod -R 755 $MYSQLCLI_DIR \
-    && apk add --no-cache --update \
-        ca-certificates \
-        wget \
-        unzip \
+    && apk add --no-cache --update ${DEPS} \
     && cd / \
     && wget https://github.com/vikc07/mysqlbackup/archive/master.zip \
     && unzip master.zip \
     && mv mysqlbackup-master app \
     && rm master.zip \
-    && apk del \
-        ca-certificates \
-        wget \
-        unzip \
-    && rm -rf /var/cache/apk/*
+    && apk del ${DEPS} \
+    && rm -rf /var/cache/apk/* \
     && pip install -r app/requirements.txt \
     && cp app/mysqlbackup/cfg/sample_mysqlbackup.json app/mysqlbackup/cfg/mysqlbackup.json \
     && mkdir /output \

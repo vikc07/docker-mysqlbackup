@@ -15,6 +15,9 @@ ARG RUN_GROUP=coco
 ARG RUN_UID=5555
 ARG RUN_GID=5555
 ARG RUN_PASS=coco123@
+ARG DEPS="ca-certificates \
+        wget \
+        unzip"
 
 ENV MYSQLCLI_DIR=/mysqlcli \
     RUN_USER=${RUN_USER} \
@@ -31,19 +34,13 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && chown -R $RUN_USER:$RUN_GROUP $MYSQLCI_DIR \
     && chmod -R 755 $MYSQLCLI_DIR \
     && apt-get -y update \
-    && apt-get -y install --no-install-recommends \
-        ca-certificates \
-        wget \
-        unzip \
+    && apt-get -y install --no-install-recommends ${DEPS} \
     && cd / \
     && wget https://github.com/vikc07/mysqlbackup/archive/master.zip \
     && unzip master.zip \
     && mv mysqlbackup-master app \
     && rm master.zip \
-    && apt-get -y remove \
-        ca-certificates \
-        wget \
-        unzip \
+    && apt-get -y remove ${DEPS} \
     && apt-get -y clean \
     && apt-get -y autoclean \
     && apt-get -y autoremove \
