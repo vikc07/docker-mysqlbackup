@@ -2,10 +2,10 @@ FROM vikramchauhan/mysqlcli:debian as mysqlcli
 
 ENV MYSQLCLI_DIR=/mysqlcli
 
-RUN mkdir /mysqlcli \
+RUN mkdir $MYSQLCLI_DIR \
     && mkdir $MYSQLCLI_DIR/lib \
     && cp -fv /usr/bin/mysql* $MYSQLCLI_DIR \
-    && ldd /usr/bin/mysql | cut -d ' ' -f 3 | xargs -i cp {} $MYSQLCLI_DIR/lib
+    && ldd /usr/bin/mysql | cut -d ' ' -f 3 | xargs -Isrc cp src $MYSQLCLI_DIR/lib
 
 FROM python:3-slim
 MAINTAINER Vikram Chauhan <me@vkrm.ch>
@@ -17,10 +17,12 @@ ARG RUN_GID=5555
 ARG RUN_PASS=coco123@
 ARG DEPS="ca-certificates \
         wget \
-        unzip"
+        unzip \
+        git"
+ARG MYSQLCLI_DIR=/mysqlcli
+ARG MYSQLCLI_OUTPUT_DIR=/output
 
-ENV MYSQLCLI_DIR=/mysqlcli \
-    RUN_USER=${RUN_USER} \
+ENV RUN_USER=${RUN_USER} \
     RUN_GROUP=${RUN_GROUP} \
     RUN_UID=${RUN_UID} \
     RUN_GID=${RUN_GID} \
@@ -31,7 +33,7 @@ COPY --from=mysqlcli $MYSQLCLI_DIR $MYSQLCLI_DIR
 
 RUN groupadd -g $RUN_GID $RUN_GROUP \
     && useradd -m $RUN_USER -c "Run Account" -g $RUN_GROUP -u $RUN_UID -p $RUN_PASS \
-    && chown -R $RUN_USER:$RUN_GROUP $MYSQLCI_DIR \
+    && chown -R $RUN_USER:$RUN_GROUP $MYSQLCLI_DIR \
     && chmod -R 755 $MYSQLCLI_DIR \
     && apt-get -y update \
     && apt-get -y install --no-install-recommends ${DEPS} \
@@ -40,17 +42,17 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && unzip master.zip \
     && mv mysqlbackup-master app \
     && rm master.zip \
-    && apt-get -y remove ${DEPS} \
-    && apt-get -y clean \
-    && apt-get -y autoclean \
-    && apt-get -y autoremove \
     && rm -rf /var/lib/apt/lists/* \
     && pip install -r app/requirements.txt \
     && cp app/mysqlbackup/cfg/sample_mysqlbackup.json app/mysqlbackup/cfg/mysqlbackup.json \
-    && mkdir /output \
-    && chown -R $RUN_USER:$RUN_GROUP /output
+    && mkdir $MYSQLCLI_OUTPUT_DIR \
+    && chown -R $RUN_USER:$RUN_GROUP $MYSQLCLI_OUTPUT_DIR \
+    && apt-get -y remove ${DEPS} \
+    && apt-get -y clean \
+    && apt-get -y autoclean \
+    && apt-get -y autoremove
 
 USER $RUN_USER
 
 # Set entrypoint
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/sh"]
