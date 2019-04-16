@@ -21,6 +21,7 @@ ARG DEPS="ca-certificates \
         git"
 ARG MYSQLCLI_DIR=/mysqlcli
 ARG MYSQLCLI_OUTPUT_DIR=/output
+ARG APP_CFG_DIR=/config
 
 ENV RUN_USER=${RUN_USER} \
     RUN_GROUP=${RUN_GROUP} \
@@ -44,7 +45,10 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && rm master.zip \
     && rm -rf /var/lib/apt/lists/* \
     && pip install -r app/requirements.txt \
-    && cp app/mysqlbackup/cfg/sample_mysqlbackup.json app/mysqlbackup/cfg/mysqlbackup.json \
+    && mkdir $APP_CFG_DIR \
+    && cp /app/mysqlbackup/cfg/sample_mysqlbackup.json $APP_CFG_DIR/mysqlbackup.json \
+    && rm -rf /app/mysqlbackup/cfg \
+    && ln -s /config /app/mysqlbackup/cfg \
     && mkdir $MYSQLCLI_OUTPUT_DIR \
     && chown -R $RUN_USER:$RUN_GROUP $MYSQLCLI_OUTPUT_DIR \
     && apt-get -y remove ${DEPS} \
@@ -53,6 +57,7 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && apt-get -y autoremove
 
 USER $RUN_USER
+VOLUME /config
 
 # Set entrypoint
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["sh", "-c"]

@@ -21,6 +21,7 @@ ARG DEPS="ca-certificates \
         git"
 ARG MYSQLCLI_DIR=/mysqlcli
 ARG MYSQLCLI_OUTPUT_DIR=/output
+ARG APP_CFG_DIR=/config
 
 ENV RUN_USER=${RUN_USER} \
     RUN_GROUP=${RUN_GROUP} \
@@ -42,13 +43,17 @@ RUN addgroup -g $RUN_GID $RUN_GROUP \
     && mv mysqlbackup-master app \
     && rm master.zip \
     && pip install -r app/requirements.txt \
-    && cp app/mysqlbackup/cfg/sample_mysqlbackup.json app/mysqlbackup/cfg/mysqlbackup.json \
+    && mkdir $APP_CFG_DIR \
+    && cp /app/mysqlbackup/cfg/sample_mysqlbackup.json $APP_CFG_DIR/mysqlbackup.json \
+    && rm -rf /app/mysqlbackup/cfg \
+    && ln -s /config /app/mysqlbackup/cfg \
     && mkdir $MYSQLCLI_OUTPUT_DIR \
     && chown -R $RUN_USER:$RUN_GROUP $MYSQLCLI_OUTPUT_DIR \
     && apk del ${DEPS} \
     && rm -rf /var/cache/apk/*
 
 USER $RUN_USER
+VOLUME /config
 
 # Set entrypoint
 ENTRYPOINT ["sh", "-c"]
