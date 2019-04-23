@@ -47,6 +47,7 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && pip install -r app/requirements.txt \
     && mkdir $APP_CFG_DIR \
     && cp /app/mysqlbackup/cfg/sample_mysqlbackup.json $APP_CFG_DIR/mysqlbackup.json \
+    && chown -R $RUN_USER:$RUN_GROUP $APP_CFG_DIR \
     && rm -rf /app/mysqlbackup/cfg \
     && ln -s /config /app/mysqlbackup/cfg \
     && mkdir $MYSQLCLI_OUTPUT_DIR \
@@ -57,7 +58,6 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && apt-get -y autoremove
 
 USER $RUN_USER
-VOLUME /config
 
 # Set entrypoint
 ENTRYPOINT ["sh", "-c"]
