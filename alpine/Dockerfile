@@ -46,7 +46,7 @@ RUN addgroup -g $RUN_GID $RUN_GROUP \
     && mkdir $APP_CFG_DIR \
     && cp /app/mysqlbackup/cfg/sample_mysqlbackup.json $APP_CFG_DIR/mysqlbackup.json \
     && chown -R $RUN_USER:$RUN_GROUP $APP_CFG_DIR \
-    && rm -rf /app/mysqlbackup/cfg \
+    && mv /app/mysqlbackup/cfg /app/mysqlbackup/cfg_orig \
     && ln -s /config /app/mysqlbackup/cfg \
     && mkdir $MYSQLCLI_OUTPUT_DIR \
     && chown -R $RUN_USER:$RUN_GROUP $MYSQLCLI_OUTPUT_DIR \
