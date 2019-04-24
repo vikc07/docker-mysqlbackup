@@ -50,7 +50,7 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && mv /app/mysqlbackup/cfg /app/mysqlbackup/cfg_orig \
     && ln -s /config /app/mysqlbackup/cfg \
     && mkdir $MYSQLCLI_OUTPUT_DIR \
-    && cat "python /app/mysqlbackup/mysqlbackup.py" > /app/app.sh \
+    && echo "python /app/mysqlbackup/mysqlbackup.py" > /app/app.sh \
     && chmod +x /app/app.sh \
     && chown -R $RUN_USER:$RUN_GROUP /app \
     && chown -R $RUN_USER:$RUN_GROUP $APP_CFG_DIR \
