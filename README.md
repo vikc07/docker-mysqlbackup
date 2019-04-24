@@ -23,6 +23,7 @@ Edit the file `/dir/config/mysqlbackup.json`
     
 Run the following command for subsequent runs    
     
-    docker run -it -v /dir/config:/config -v /dir/output:/output vikramchauhan/mysqlbackup
+    docker run -it -v /dir/config:/config -v /dir/output:/output vikramchauhan/mysqlbackup "python 
+    /app/mysqlbackup/mysqlbackup.py"
    
     
