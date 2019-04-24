@@ -47,10 +47,11 @@ RUN groupadd -g $RUN_GID $RUN_GROUP \
     && pip install -r app/requirements.txt \
     && mkdir $APP_CFG_DIR \
     && cp /app/mysqlbackup/cfg/sample_mysqlbackup.json $APP_CFG_DIR/mysqlbackup.json \
-    && chown -R $RUN_USER:$RUN_GROUP $APP_CFG_DIR \
     && mv /app/mysqlbackup/cfg /app/mysqlbackup/cfg_orig \
     && ln -s /config /app/mysqlbackup/cfg \
     && mkdir $MYSQLCLI_OUTPUT_DIR \
+    && chown -R $RUN_USER:$RUN_GROUP /app \
+    && chown -R $RUN_USER:$RUN_GROUP $APP_CFG_DIR \
     && chown -R $RUN_USER:$RUN_GROUP $MYSQLCLI_OUTPUT_DIR \
     && apt-get -y remove ${DEPS} \
     && apt-get -y clean \
